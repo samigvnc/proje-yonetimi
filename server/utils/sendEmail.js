@@ -3,22 +3,23 @@ require('dotenv').config();
 
 const sendEmail = async (to, subject, text) => {
   try {
+    // Hazır Gmail Servisi Kullanıyoruz
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587, // 465 yerine 587 (TLS) kullanıyoruz, daha esnektir
-      secure: false, // 587 için false olmalı
+      service: 'gmail', // <--- EN ÖNEMLİ DEĞİŞİKLİK
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      // Bazı güvenlik sertifikası hatalarını görmezden gel
       tls: {
-        ciphers: "SSLv3", // Eski protokol uyumluluğu
-        rejectUnauthorized: false, // Sertifika hatalarını görmezden gel
+        rejectUnauthorized: false
       },
-      family: 4 // <--- İŞTE SİHİRLİ DEĞNEK: Sadece IPv4 kullanmaya zorla
+      // IPv4 kullanmaya zorla (Render için kritik)
+      family: 4 
     });
 
-    // Mail gönder (await burada kalsın, çağıran yerden kaldıracağız)
+    console.log(`📨 Mail gönderimi deneniyor: ${to}`);
+
     await transporter.sendMail({
       from: `"SAP Proje Yönetimi" <${process.env.EMAIL_USER}>`,
       to: to,
@@ -35,7 +36,7 @@ const sendEmail = async (to, subject, text) => {
 
     console.log(`✅ Mail başarıyla gönderildi: ${to}`);
   } catch (error) {
-    console.error("❌ Mail Gönderim Hatası:", error.message);
+    console.error("❌ Mail Gönderim Hatası:", error);
   }
 };
 
