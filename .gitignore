@@ -1,0 +1,11 @@
+.env
+server/.env
+client/.env
+
+# Gereksiz kütüphane dosyaları (Sunucu kendi kuracak)
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Sistem dosyaları
+.DS_Store
