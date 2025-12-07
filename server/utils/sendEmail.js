@@ -16,12 +16,12 @@ const sendEmail = async (to, subject, text) => {
     console.log(`📨 Mail gönderiliyor: ${to}`);
 
     await transporter.sendMail({
-      from: `"SAP Proje Yönetimi" <${process.env.EMAIL_USER}>`, // Gönderen adresi (Brevo hesabındaki mail)
+      from: `"IEEE Proje Yönetimi" <ieeekyssistem@gmail.com>`, // Gönderen adresi (Brevo hesabındaki mail)
       to: to,
       subject: subject,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-            <h2 style="color: #2c3e50;">SAP Proje Bildirimi</h2>
+            <h2 style="color: #2c3e50;">IEEE Proje Bildirimi</h2>
             <p style="font-size: 16px;">${text}</p>
             <br>
             <small style="color: #888;">Bu mail otomatik olarak gönderilmiştir.</small>
