@@ -1,20 +1,24 @@
-// server/utils/sendEmail.js
 const nodemailer = require("nodemailer");
 require('dotenv').config();
 
 const sendEmail = async (to, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // Direkt sunucu adresi
-      port: 465,              // Güvenli SSL portu (Render bunu sever)
-      secure: true,           // 465 için true olmak zorundadır
+      host: "smtp.gmail.com",
+      port: 587, // 465 yerine 587 (TLS) kullanıyoruz, daha esnektir
+      secure: false, // 587 için false olmalı
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        ciphers: "SSLv3", // Eski protokol uyumluluğu
+        rejectUnauthorized: false, // Sertifika hatalarını görmezden gel
+      },
+      family: 4 // <--- İŞTE SİHİRLİ DEĞNEK: Sadece IPv4 kullanmaya zorla
     });
 
-    // Maili gönder
+    // Mail gönder (await burada kalsın, çağıran yerden kaldıracağız)
     await transporter.sendMail({
       from: `"SAP Proje Yönetimi" <${process.env.EMAIL_USER}>`,
       to: to,
@@ -31,8 +35,7 @@ const sendEmail = async (to, subject, text) => {
 
     console.log(`✅ Mail başarıyla gönderildi: ${to}`);
   } catch (error) {
-    console.error("❌ Mail Gönderim Hatası:", error.message); 
-    // Tüm hatayı basıp logları kirletmek yerine sadece mesajı basıyoruz
+    console.error("❌ Mail Gönderim Hatası:", error.message);
   }
 };
 

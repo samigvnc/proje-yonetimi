@@ -79,7 +79,7 @@ router.post('/create', verify, upload.single('file'), async (req, res) => {
         // Liderin mail adresini bulmamız lazım
         const leaderUser = await User.findById(targetTeam.leader);
         if (leaderUser) {
-            await sendEmail(
+            sendEmail(
                 leaderUser.email,
                 "Yeni Bir Görev Atandı!",
                 `Merhaba <b>${leaderUser.name}</b>,<br><br>
@@ -120,7 +120,7 @@ router.put('/delegate', verify, async (req, res) => {
         assignments.forEach(async (assignment) => {
             const memberUser = await User.findById(assignment.memberId);
             if (memberUser) {
-                await sendEmail(
+                sendEmail(
                     memberUser.email,
                     "Sana Bir Görev Atandı!",
                     `Merhaba <b>${memberUser.name}</b>,<br><br>
