@@ -3,25 +3,20 @@ require('dotenv').config();
 
 const sendEmail = async (to, subject, text) => {
   try {
-    // Hazır Gmail Servisi Kullanıyoruz
     const transporter = nodemailer.createTransport({
-      service: 'gmail', // <--- EN ÖNEMLİ DEĞİŞİKLİK
+      host: process.env.EMAIL_HOST, // smtp-relay.brevo.com
+      port: process.env.EMAIL_PORT, // 587
+      secure: false, // 587 için false
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      // Bazı güvenlik sertifikası hatalarını görmezden gel
-      tls: {
-        rejectUnauthorized: false
-      },
-      // IPv4 kullanmaya zorla (Render için kritik)
-      family: 4 
     });
 
-    console.log(`📨 Mail gönderimi deneniyor: ${to}`);
+    console.log(`📨 Mail gönderiliyor: ${to}`);
 
     await transporter.sendMail({
-      from: `"SAP Proje Yönetimi" <${process.env.EMAIL_USER}>`,
+      from: `"SAP Proje Yönetimi" <${process.env.EMAIL_USER}>`, // Gönderen adresi (Brevo hesabındaki mail)
       to: to,
       subject: subject,
       html: `
@@ -36,7 +31,7 @@ const sendEmail = async (to, subject, text) => {
 
     console.log(`✅ Mail başarıyla gönderildi: ${to}`);
   } catch (error) {
-    console.error("❌ Mail Gönderim Hatası:", error);
+    console.error("❌ Mail Gönderim Hatası:", error.message);
   }
 };
 
