@@ -1,6 +1,7 @@
 // client/src/components/Navbar.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -18,7 +19,20 @@ const Navbar = () => {
                 Işık IEEE Proje Yönetim Sistemi
             </div>
             <div style={styles.menu}>
-                <span style={styles.user}>Merhaba, {user ? user.name : 'Kullanıcı'}</span>
+                <span style={styles.user}>
+                Merhaba,{' '}
+                <Link 
+                    to="/profile" 
+                    style={{ 
+                    color: 'inherit',       // Mevcut yazı rengini korur (beyazsa beyaz kalır)
+                    textDecoration: 'none', // Alt çizgiyi kaldırır (istersen 'underline' yapabilirsin)
+                    fontWeight: 'bold',     // Tıklanabilir olduğunu hissettirmek için biraz kalınlaştırdık
+                    cursor: 'pointer'
+                    }}
+                >
+                    {user ? user.name : 'Kullanıcı'}
+                </Link>
+                </span>
                 <button onClick={handleLogout} style={styles.logoutBtn}>Çıkış Yap</button>
             </div>
         </nav>

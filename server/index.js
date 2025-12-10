@@ -12,7 +12,7 @@ const cron = require('node-cron');
 const sendEmail = require('./utils/sendEmail');
 const Task = require('./models/Task');
 const User = require('./models/User');
-
+const userRoute = require('./routes/users');
 dotenv.config();
 
 const app = express();
@@ -23,13 +23,13 @@ app.use(express.json());
 
 // Uploads klasörünü statik yap (Tarayıcıdan erişilebilsin diye)
 // Örn: https://proje-yonetimi.onrender.com/uploads/resim.jpg
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // <-- YENİ EKLENDİ
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 
 // ROTALAR
 app.use('/api/auth', authRoute);
 app.use('/api/projects', projectRoute);
-app.use('/api/tasks', taskRoute); // <-- YENİ EKLENDİ
-
+app.use('/api/tasks', taskRoute); 
+app.use('/api/users', userRoute);
 app.get('/', (req, res) => {
     res.send('SAP Proje Yönetimi API Çalışıyor');
 });

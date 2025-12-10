@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../apiConfig';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const Register = () => {
         e.preventDefault();
         try {
             // Backend'e istek atıyoruz (Port 5000)
-            await axios.post('https://proje-yonetimi.onrender.com/api/auth/register', formData);
+            await axios.post(`${API_URL}/auth/register`, formData);
             toast.success('Kayıt başarılı! Giriş yapabilirsiniz.');
             navigate('/'); // Giriş sayfasına yönlendir
         } catch (error) {

@@ -290,4 +290,93 @@ router.delete('/:id/announcements', verify, async (req, res) => {
     }
 });
 
+// --- PROJE GÜNCELLEME (Sadece Kaptan) ---
+router.put('/:id', verify, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) return res.status(404).json({ message: "Proje bulunamadı." });
+
+        // Yetki Kontrolü: Sadece Kaptan güncelleyebilir
+        if (project.leader.toString() !== req.user._id) {
+            return res.status(403).json({ message: "Bu işlemi sadece proje kaptanı yapabilir." });
+        }
+
+        // Güncelleme işlemi
+        const updatedProject = await Project.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: {
+                    name: req.body.name,
+                    description: req.body.description
+                }
+            },
+            { new: true } // Güncellenmiş halini döndür
+        );
+
+        res.status(200).json(updatedProject);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// --- PROJE SİLME (Sadece Kaptan - Görevleri de Siler) ---
+const Task = require('../models/Task'); // Task modelini import etmeyi unutma!
+
+router.delete('/:id', verify, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) return res.status(404).json({ message: "Proje bulunamadı." });
+
+        // Yetki Kontrolü
+        if (project.leader.toString() !== req.user._id) {
+            return res.status(403).json({ message: "Projeyi sadece kaptan silebilir." });
+        }
+
+        // 1. Önce projeye ait tüm görevleri sil (Temizlik)
+        await Task.deleteMany({ project: req.params.id });
+
+        // 2. Sonra projeyi sil
+        await Project.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({ message: "Proje ve bağlı tüm görevler başarıyla silindi." });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// --- PROJEDEN AYRILMA ---
+router.post('/leave', verify, async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        const userId = req.user._id;
+
+        const project = await Project.findById(projectId);
+        if (!project) return res.status(404).json({ message: "Proje bulunamadı." });
+
+        // Kaptan ayrılamaz (Projeyi silmesi gerekir)
+        if (project.leader.toString() === userId) {
+            return res.status(400).json({ message: "Kaptan projeden ayrılamaz, projeyi silebilirsiniz." });
+        }
+
+        // 1. Üye listesinden çıkar
+        await Project.findByIdAndUpdate(projectId, {
+            $pull: { members: userId }
+        });
+
+        // 2. Eğer bir alt ekibin lideriyse, liderliği düşür
+        const subTeamIndex = project.subTeams.findIndex(t => t.leader && t.leader.toString() === userId);
+        if (subTeamIndex !== -1) {
+            project.subTeams[subTeamIndex].leader = null; // Lider koltuğunu boşalt
+            await project.save();
+        }
+
+        // 3. Alt ekiplerin üye listesinden de çıkar (Opsiyonel ama temizlik için iyi)
+        // (Eğer subTeams içindeki members array'inden de silmek istersen buraya ekleyebiliriz)
+
+        res.status(200).json({ message: "Projeden ayrıldınız." });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

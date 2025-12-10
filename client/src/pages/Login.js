@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../apiConfig';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('https://proje-yonetimi.onrender.com/api/auth/login', { email, password });
+            const res = await axios.post(`${API_URL}/auth/login`, { email, password });
             
             // Token'ı ve kullanıcı bilgisini tarayıcı hafızasına kaydet
             localStorage.setItem('token', res.data.token);
